@@ -1,0 +1,103 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+    <!-- Logo -->
+    <img
+      src="assets/images/logo-horizontal.svg"
+      alt="Logo horizontal"
+      class="mx-auto mb-6 h-12"
+    />
+
+    <!-- Formulario -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-2">
+      <!-- Email -->
+      <div>
+        <label
+          for="email"
+          class="block text-blue-600 text-sm font-medium text-gray-700"
+        >
+          Correo electrónico
+        </label>
+        <input
+          formControlName="email"
+          id="email"
+          type="email"
+          required
+          [class.border-red-500]="
+            hasError() && loginForm.controls.email.invalid
+          "
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label
+          for="password"
+          class="text-blue-600 block text-sm font-medium text-gray-700"
+        >
+          Contraseña
+        </label>
+        <input
+          formControlName="password"
+          id="password"
+          type="password"
+          required
+          minlength="6"
+          [class.border-red-500]="
+            hasError() && loginForm.controls.password.invalid
+          "
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <!-- Error genérico -->
+      <div [hidden]="!hasError()" class="text-center text-red-600 text-sm">
+        Por favor, revisa tus credenciales e inténtalo de nuevo.
+      </div>
+
+      <!-- Botón Iniciar sesión -->
+      <button
+        type="submit"
+        [disabled]="isPosting()"
+        class="w-full flex justify-center items-center py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+      >
+        <span [hidden]="isPosting()">Iniciar sesión</span>
+
+        <svg [hidden]="!isPosting()" class="h-5 w-5 text-white" fill="none">
+          <path class="opacity-75" fill="currentColor"></path>
+        </svg>
+      </button>
+
+      <span class="flex justify-end text-blue-600 underline">
+        <p>¿Olviaste la contraseña?</p>
+      </span>
+
+      <div class="flex items-center my-6">
+        <div class="flex-1 h-px bg-gray-300"></div>
+
+        <span class="mx-4 text-gray-500 text-sm mb-1">O ingresar con</span>
+
+        <div class="flex-1 h-px bg-gray-300"></div>
+      </div>
+      <div class="flex justify-center">
+        <button type="button" (click)="loginWithGoogle()">
+          <img src="/assets/images/google-mini.png" alt="" />
+        </button>
+      </div>
+      <div class="flex justify-center">
+        <p class="mx-4 text-gray-500 text-sm mb-1 flex">
+          ¿No tienes una cuenta?
+        </p>
+      </div>
+
+      <div class="flex justify-center">
+        <button
+          class="w-full py-2.5 bg-white text-blue-500 border border-blue-500 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          [routerLink]="['/auth/register']"
+        >
+          Registrarme
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

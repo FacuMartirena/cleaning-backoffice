@@ -1,0 +1,224 @@
+<div class="p-6 bg-white rounded-lg shadow-sm">
+  <!-- Encabezado + botón Crear -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold text-gray-800">Usuarios</h1>
+    <button
+      (click)="onCreate()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+    >
+      + Crear nuevo
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda + Borrar selección -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="relative w-2/3">
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        placeholder="Buscar"
+        class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <svg
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"
+        />
+      </svg>
+    </div>
+    <button
+      *ngIf="selected.length"
+      (click)="clearSelection()"
+      class="flex items-center text-red-600 hover:text-red-800 transition"
+    >
+      <svg
+        class="h-5 w-5 mr-1"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+      Borrar selección ({{ selected.length }})
+    </button>
+  </div>
+
+  <!-- Tabs Activos / Inactivos -->
+  <div class="border-b border-gray-200 mb-6">
+    <nav class="-mb-px flex space-x-8">
+      <a
+        routerLink="/dashboard/users"
+        class="pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition"
+      >
+        Activos
+      </a>
+      <a
+        routerLink="inactivos"
+        class="pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition"
+      >
+        Inactivos
+      </a>
+    </nav>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2">
+            <input type="checkbox" (change)="toggleAll($event)" />
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase"
+          >
+            Imagen
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase cursor-pointer"
+          >
+            Nombre completo
+            <span class="inline-block transform rotate-180">▲</span>
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase cursor-pointer"
+          >
+            Email
+            <span class="inline-block transform rotate-180">▲</span>
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase cursor-pointer"
+          >
+            Rol
+            <span class="inline-block transform rotate-180">▲</span>
+          </th>
+          <th
+            class="px-4 py-2 text-right text-sm font-medium text-gray-500 uppercase"
+          >
+            Acción
+          </th>
+        </tr>
+      </thead>
+
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr
+          *ngIf="filteredUsers().length == 0"
+          colspan="6"
+          class="px-4 py-6 text-center text-gray-500"
+        >
+          No hay usuarios
+          {{
+            isInactiveTab ? "inactivos" : "activos"
+          }}.
+        </tr>
+        <tr
+          *ngFor="let user of filteredUsers()"
+          [class.bg-blue-50]="isSelected(user)"
+        >
+          <td class="px-4 py-2">
+            <input
+              type="checkbox"
+              [checked]="isSelected(user)"
+              (change)="toggleSelection(user)"
+            />
+          </td>
+
+          <td class="px-4 py-2">
+            <img
+              [src]="user.photoUrl || 'assets/images/users/default.jpg'"
+              (error)="onImageError($event)"
+              alt="{{ user.name }}"
+              class="w-8 h-8 rounded-full object-cover border border-gray-300"
+            />
+          </td>
+
+          <td class="px-4 py-2 text-gray-900">
+            {{ user.name }} {{ user.surname }}
+          </td>
+
+          <td class="px-4 py-2 text-gray-600">{{ user.email }}</td>
+          <td class="px-4 py-2">{{ user.role }}</td>
+
+          <td class="px-4 py-2 text-right space-x-2">
+            <button
+              (click)="edit(user)"
+              class="text-gray-400 hover:text-gray-600"
+            >
+              <!-- ícono lápiz -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="#171aca"
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z"
+                />
+              </svg>
+            </button>
+
+            <ng-container *ngIf="!isInactiveTab; else restoreBtn">
+              <button
+                (click)="edit(user)"
+                class="text-gray-400 hover:text-gray-600"
+              ></button>
+              <button
+                (click)="delete(user)"
+                class="text-red-400 hover:text-red-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#ff1800"
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
+                  />
+                </svg>
+              </button>
+            </ng-container>
+
+            <ng-template #restoreBtn>
+              <button
+                (click)="restore(user)"
+                class="text-green-500 hover:text-green-700"
+                title="Restaurar usuario"
+              >
+                <!-- ícono agregar -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12 4a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6V5a1 1 0 0 1 1-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
