@@ -8,7 +8,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../services/auth.service';
 
 export const NotAuthenticatedGuard: CanActivateFn = (
   _route: ActivatedRouteSnapshot,

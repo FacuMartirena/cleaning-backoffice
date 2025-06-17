@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { finalize } from 'rxjs';
 import { AuthResponse } from '../../interfaces/authResponse.interface';
 
@@ -45,7 +45,9 @@ export class LoginPageComponent {
       .pipe(finalize(() => this.isPosting.set(false)))
       .subscribe({
         next: (resp: AuthResponse) => {
-          this.router.navigate(['/dashboard', 'orders'], { replaceUrl: true });
+          this.router.navigate(['/dashboard', 'products'], {
+            replaceUrl: true,
+          });
         },
         error: () => {
           // Credenciales inválidas o fallo en el guard

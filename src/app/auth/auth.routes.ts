@@ -6,12 +6,18 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { NotAuthenticatedGuard } from './guards/not-authenticated.guard';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
 import { AdminGuard } from './guards/admin.guard';
+import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 
 export const authRoutes: Routes = [
   {
     path: '',
     component: AuthLayoutComponent,
     children: [
+      {
+        path: 'landing',
+        component: LandingPageComponent,
+        canActivate: [NotAuthenticatedGuard],
+      },
       {
         path: 'login',
         component: LoginPageComponent,
@@ -20,6 +26,7 @@ export const authRoutes: Routes = [
       {
         path: 'register/:id',
         component: RegisterPageComponent,
+        canActivate: [NotAuthenticatedGuard],
       },
 
       {
@@ -27,6 +34,7 @@ export const authRoutes: Routes = [
         component: RegisterPageComponent,
         canActivate: [AuthenticatedGuard, AdminGuard],
       },
+
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: '**', redirectTo: 'login', pathMatch: 'full' },
     ],

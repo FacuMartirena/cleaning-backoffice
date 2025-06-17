@@ -1,0 +1,62 @@
+<div class="p-6 bg-white rounded-lg shadow-sm">
+  <div class="p-6 bg-white rounded-lg shadow-sm">
+    <!-- Encabezado + botón Crear -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold text-gray-800">Pedidos</h1>
+      <button
+        (click)="onCreate()"
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+      >
+        + Crear pedido
+      </button>
+    </div>
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left">Producto</th>
+          <th class="px-4 py-2 text-left">Usuario</th>
+          <th class="px-4 py-2 text-left">Cantidad</th>
+          <th class="px-4 py-2 text-left">Fecha</th>
+          <th class="px-4 py-2 text-left">Edificio</th>
+          <th class="px-4 py-2 text-left">Estado</th>
+          <th class="px-4 py-2 text-left">Acción</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let o of orders">
+          <td class="px-4 py-2">{{ o.productName }}</td>
+          <td class="px-4 py-2">{{ o.user }}</td>
+          <td class="px-4 py-2">{{ o.quantity }}</td>
+          <td class="px-4 py-2">{{ o.date | date : "dd/MM/yy HH:mm" }}</td>
+          <td class="px-4 py-2">{{ o.building }}</td>
+          <td class="px-4 py-2">
+            <span *ngIf="o.status === 'pendiente'">Pendiente</span>
+            <span *ngIf="o.status === 'completada'" class="text-green-600"
+              >Completado</span
+            >
+            <span *ngIf="o.status === 'rechazada'" class="text-red-600"
+              >Rechazado</span
+            >
+            <span *ngIf="o.reason">{{ o.reason }}</span>
+          </td>
+          <td class="px-4 py-2 space-x-2">
+            <button
+              *ngIf="o.status === 'pendiente'"
+              (click)="finalize(o)"
+              class="text-green-600"
+            >
+              Finalizar
+            </button>
+            <button
+              *ngIf="o.status === 'pendiente'"
+              (click)="reject(o)"
+              class="text-red-600"
+            >
+              Rechazar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -7,7 +7,7 @@ import {
   RouterModule,
   UrlSegment,
 } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { AppUser } from '../../../auth/interfaces/appUser.interface';
 
 @Component({
@@ -28,7 +28,6 @@ export class UsersComponent {
   isInactiveTab = false;
 
   constructor() {
-    // cuando cambian las pestañas (activos/inactivos) recarga lista
     this.route.url.subscribe((segments: UrlSegment[]) => {
       this.isInactiveTab = segments.some((s) => s.path === 'inactivos');
       this.loadUsers();

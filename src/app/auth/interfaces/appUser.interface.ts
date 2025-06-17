@@ -1,5 +1,5 @@
 export interface AppUser {
-  /** Para autenticación y datos de perfil */
+  id: number;
   name: string;
   surname: string;
   email: string;
@@ -9,7 +9,5 @@ export interface AppUser {
   role: 'Administrador' | 'Usuario';
   building: string;
   photoUrl?: string;
-  /** Para el listado en UI */
-  id: number;
   active?: boolean;
 }

@@ -1,7 +1,7 @@
 // src/app/services/auth.service.ts
 import { Injectable, signal, computed } from '@angular/core';
-import { AppUser } from '../auth/interfaces/appUser.interface';
-import { AuthResponse } from '../auth/interfaces/authResponse.interface';
+import { AppUser } from '../interfaces/appUser.interface';
+import { AuthResponse } from '../interfaces/authResponse.interface';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 
@@ -16,7 +16,7 @@ export class AuthService {
   private _user = signal<AppUser | null>(null);
 
   authStatus = computed(() => this._authStatus());
-  user = computed(() => this._user());
+  user = computed(() => this._user()!);
 
   constructor() {
     this.seedDefaultUser();
@@ -94,7 +94,6 @@ export class AuthService {
         const users = this.getUsers();
         users.push(user);
         this.saveUsers(users);
-        // 🔥 No cambia la sesión actual (no se hace autologin)
       })
     );
   }

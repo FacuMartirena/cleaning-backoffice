@@ -9,7 +9,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { AppUser } from '../../interfaces/appUser.interface';
 
 @Component({
@@ -63,6 +63,9 @@ export class RegisterPageComponent implements OnInit {
 
     this.isPosting.set(true);
     const form = this.registerForm.value;
+    const existingUser = this.editingUserId
+      ? this.authService.getUsers().find((u) => u.id === this.editingUserId)
+      : null;
 
     const user: AppUser = {
       id: this.editingUserId ?? Date.now(),
@@ -74,8 +77,8 @@ export class RegisterPageComponent implements OnInit {
       charge: (form.charge ?? 'Limpieza') as 'Limpieza' | 'Administrativo',
       role: (form.role ?? 'Usuario') as 'Usuario' | 'Administrador',
       building: form.building ?? '',
-      photoUrl: 'assets/images/users/default.jpg',
-      active: true,
+      photoUrl: existingUser?.photoUrl ?? 'assets/images/image-test2.png',
+      active: existingUser?.active ?? true,
     };
 
     if (this.editingUserId) {
