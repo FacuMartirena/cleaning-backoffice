@@ -1,8 +1,65 @@
-<div class="flex min-h-screen">
-  <side-menu class="w-56 flex-shrink-0"></side-menu>
+<div class="flex min-h-screen relative overflow-x-hidden">
+  <!-- Sidebar Desktop (desde md en adelante) -->
+  <side-menu
+    class="hidden md:block md:w-56 flex-shrink-0 bg-base-200"
+  ></side-menu>
 
-  <main class="flex-1 p-6">
-    <div class="container mx-auto">
+  <!-- Sidebar Mobile Overlay (para < md) -->
+  <div
+    [ngClass]="{
+      'opacity-100 pointer-events-auto': isMobileMenuOpen(),
+      'opacity-0 pointer-events-none': !isMobileMenuOpen()
+    }"
+    class="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden transition-opacity duration-300"
+    (click)="closeMenu()"
+  >
+    <div
+      class="absolute left-0 top-0 w-full max-w-xs h-full bg-white shadow-lg transform transition-transform duration-300"
+      [ngClass]="{
+        '-translate-x-full': !isMobileMenuOpen(),
+        'translate-x-0': isMobileMenuOpen()
+      }"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Contenido del menú lateral móvil -->
+      <div class="p-4 flex justify-end">
+        <button
+          (click)="closeMenu()"
+          class="btn btn-sm btn-circle btn-ghost text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+      <side-menu class="h-full px-4" />
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-4 md:p-6 w-full">
+    <!-- Botón hamburguesa visible solo en < md -->
+    <div class="md:hidden mb-4">
+      <button
+        (click)="toggleMenu()"
+        class="btn btn-outline btn-sm flex items-center gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M3 5h14a1 1 0 100-2H3a1 1 0 000 2zm14 4H3a1 1 0 100 2h14a1 1 0 100-2zm0 6H3a1 1 0 100 2h14a1 1 0 100-2z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Menú
+      </button>
+    </div>
+
+    <!-- Contenido dinámico -->
+    <div class="w-full max-w-screen-lg mx-auto">
       <router-outlet></router-outlet>
     </div>
   </main>

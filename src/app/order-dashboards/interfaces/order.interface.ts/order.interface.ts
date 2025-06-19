@@ -1,3 +1,5 @@
+import { OrderStatus } from '../order-status.interface';
+
 export interface Order {
   id: number;
   productId: number;
@@ -6,6 +8,6 @@ export interface Order {
   quantity: number;
   date: string;
   building: string;
-  status: 'pendiente' | 'completada' | 'rechazada';
+  status: OrderStatus;
   reason?: string;
 }

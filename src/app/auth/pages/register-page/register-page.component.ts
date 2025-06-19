@@ -11,11 +11,16 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AppUser } from '../../interfaces/appUser.interface';
-
+import { UserCharge, UserRole } from '../../interfaces/user-enum.interface';
+import {
+  UserRolePipe,
+  UserChargePipe,
+} from '../../../user-dashboard/pipes/user-enum.pipe';
+import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, UserRolePipe, UserChargePipe, CommonModule],
   templateUrl: './register-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -26,6 +31,13 @@ export class RegisterPageComponent implements OnInit {
   router = inject(Router);
   authService = inject(AuthService);
   route = inject(ActivatedRoute);
+  userRoles = Object.keys(UserRole)
+    .filter((key) => !isNaN(Number(key)))
+    .map((key) => Number(key)) as UserRole[];
+
+  userCharges = Object.keys(UserCharge)
+    .filter((key) => !isNaN(Number(key)))
+    .map((key) => Number(key)) as UserCharge[];
 
   editingUserId: number | null = null;
 
@@ -35,8 +47,8 @@ export class RegisterPageComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     ci: ['', Validators.required],
-    charge: ['Limpieza', Validators.required],
-    role: ['Usuario', Validators.required],
+    charge: [UserCharge.Limpieza, Validators.required],
+    role: [UserRole.Usuario, Validators.required],
     building: ['', Validators.required],
   });
 
@@ -46,7 +58,16 @@ export class RegisterPageComponent implements OnInit {
       const id = +idParam;
       const user = this.authService.getUsers().find((u) => u.id === id);
       if (user) {
-        this.registerForm.patchValue(user);
+        this.registerForm.patchValue({
+          name: user.name,
+          surname: user.surname,
+          email: user.email,
+          password: user.password,
+          ci: user.ci,
+          charge: user.charge,
+          role: user.role,
+          building: user.building,
+        });
         this.editingUserId = user.id;
       } else {
         this.router.navigate(['/dashboard/users']);
@@ -74,8 +95,8 @@ export class RegisterPageComponent implements OnInit {
       email: form.email ?? '',
       password: form.password ?? '',
       ci: form.ci ?? '',
-      charge: (form.charge ?? 'Limpieza') as 'Limpieza' | 'Administrativo',
-      role: (form.role ?? 'Usuario') as 'Usuario' | 'Administrador',
+      charge: Number(form.charge) as UserCharge,
+      role: Number(form.role) as UserRole,
       building: form.building ?? '',
       photoUrl: existingUser?.photoUrl ?? 'assets/images/image-test2.png',
       active: existingUser?.active ?? true,

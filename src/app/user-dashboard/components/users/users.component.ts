@@ -9,13 +9,14 @@ import {
 } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { AppUser } from '../../../auth/interfaces/appUser.interface';
+import { UserRolePipe } from '../../pipes/user-enum.pipe';
 
 @Component({
   standalone: true,
   selector: 'app-users',
   templateUrl: './users.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule], // ← aquí FormsModule
+  imports: [CommonModule, FormsModule, RouterModule, UserRolePipe], // ← aquí FormsModule
 })
 export class UsersComponent {
   private authService = inject(AuthService);
@@ -77,7 +78,7 @@ export class UsersComponent {
   }
 
   edit(user: AppUser): void {
-    this.router.navigate(['/auth', 'register', user.id]);
+    this.router.navigate(['/dashboard', 'edit', user.id]);
   }
 
   delete(user: AppUser): void {

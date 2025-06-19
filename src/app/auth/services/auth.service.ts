@@ -4,6 +4,8 @@ import { AppUser } from '../interfaces/appUser.interface';
 import { AuthResponse } from '../interfaces/authResponse.interface';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
+import { UserCharge } from '../interfaces/user-enum.interface';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 
@@ -17,10 +19,11 @@ export class AuthService {
 
   authStatus = computed(() => this._authStatus());
   user = computed(() => this._user()!);
+  isCleaner = computed(() => this.user()?.charge === UserCharge.Limpieza);
 
   constructor() {
     this.seedDefaultUser();
-    this.checkStatus().subscribe(); // inicia sesión si hay authUser
+    this.checkStatus().subscribe();
   }
 
   private seedDefaultUser() {
@@ -33,8 +36,8 @@ export class AuthService {
         email: 'admin@globaluy.com',
         password: 'Globo1234',
         ci: '12345678',
-        charge: 'Administrativo',
-        role: 'Administrador',
+        charge: 1,
+        role: 1,
         building: 'Torre 1',
         active: true,
         photoUrl: 'assets/images/users/1.jpg',
@@ -111,6 +114,10 @@ export class AuthService {
       return of(false);
     }
   }
+
+  checkStatusResource = rxResource({
+    loader: () => this.checkStatus(), // ya implementado
+  });
 
   logout(): void {
     this._user.set(null);

@@ -1,3 +1,5 @@
+import { UserCharge, UserRole } from './user-enum.interface';
+
 export interface AppUser {
   id: number;
   name: string;
@@ -5,8 +7,8 @@ export interface AppUser {
   email: string;
   password: string;
   ci: string;
-  charge: 'Administrativo' | 'Limpieza';
-  role: 'Administrador' | 'Usuario';
+  charge: UserCharge;
+  role: UserRole;
   building: string;
   photoUrl?: string;
   active?: boolean;

@@ -1,7 +1,4 @@
-<!-- src/app/user-dashboard/components/side-menu/side-menu.component.html -->
-<aside
-  class="w-56 bg-white border border-blue-500 min-h-screen flex flex-col justify-between"
->
+<aside class="w-full sm:w-56 flex flex-col">
   <!-- Encabezado -->
   <div>
     <div class="px-4 py-6">
@@ -12,6 +9,7 @@
       <nav class="space-y-4">
         <!-- Usuarios (sólo admin) -->
         <a
+          *ngIf="canViewSensitiveSections()"
           routerLink="users"
           routerLinkActive="text-blue-500 font-semibold"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -60,6 +58,7 @@
 
         <!-- Productos -->
         <a
+          *ngIf="canViewSensitiveSections()"
           routerLink="products"
           routerLinkActive="text-blue-500 font-semibold"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -86,7 +85,7 @@
   </div>
 
   <!-- Pie: Cerrar sesión -->
-  <div class="px-4 pb-6">
+  <div class="px-4 pb-6 mt-auto">
     <button
       type="button"
       (click)="onLogout()"

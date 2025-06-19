@@ -139,7 +139,7 @@
 
           <td class="px-4 py-2">
             <img
-              [src]="user.photoUrl || 'assets/images/users/default.jpg'"
+              [src]="user.photoUrl || 'assets/images/image-test2.png'"
               (error)="onImageError($event)"
               alt="{{ user.name }}"
               class="w-8 h-8 rounded-full object-cover border border-gray-300"
@@ -151,7 +151,7 @@
           </td>
 
           <td class="px-4 py-2 text-gray-600">{{ user.email }}</td>
-          <td class="px-4 py-2">{{ user.role }}</td>
+          <td class="px-4 py-2">{{ user.role | userRole }}</td>
 
           <td class="px-4 py-2 text-right space-x-2">
             <button

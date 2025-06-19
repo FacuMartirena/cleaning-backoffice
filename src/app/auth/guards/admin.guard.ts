@@ -1,5 +1,6 @@
 // src/app/auth/guards/admin.guard.ts
 import { inject } from '@angular/core';
+import { UserCharge, UserRole } from '../interfaces/user-enum.interface';
 import {
   CanActivateFn,
   Router,
@@ -17,7 +18,10 @@ export const AdminGuard: CanActivateFn = (
   const router = inject(Router);
   const user = auth.user();
 
-  if (user?.role === 'Administrador') {
+  if (
+    user?.charge === UserCharge.Administrativo ||
+    user?.role === UserRole.Administrador
+  ) {
     return true;
   }
 

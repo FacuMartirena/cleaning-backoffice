@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Order } from '../interfaces/order.interface.ts/order.interface';
+import { OrderStatus } from '../interfaces/order-status.interface';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
@@ -19,7 +20,7 @@ export class OrdersService {
     const orders = this.getOrders();
     const idx = orders.findIndex((o) => o.id === id);
     if (idx !== -1) {
-      orders[idx].status = 'completada';
+      orders[idx].status = OrderStatus.completed;
       this.saveOrders(orders);
     }
   }
@@ -28,7 +29,7 @@ export class OrdersService {
     const orders = this.getOrders();
     const idx = orders.findIndex((o) => o.id === id);
     if (idx !== -1) {
-      orders[idx].status = 'rechazada';
+      orders[idx].status = OrderStatus.rejected;
       orders[idx].reason = reason;
       this.saveOrders(orders);
     }
@@ -40,7 +41,7 @@ export class OrdersService {
       ...order,
       id: Date.now(),
       date: new Date().toISOString(),
-      status: 'pendiente',
+      status: OrderStatus.pendent,
     };
     orders.push(newOrder);
     this.saveOrders(orders);
