@@ -1,0 +1,156 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-semibold mb-6 text-center">
+      {{ editingUserId ? "Editar usuario" : "Crear cuenta" }}
+    </h2>
+
+    <div
+      *ngIf="hasError()"
+      class="text-center bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4"
+    >
+      {{ errorMessage() || "Ocurrió un error inesperado" }}
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <input
+          formControlName="firstName"
+          type="text"
+          placeholder="Nombre"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        />
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'firstName')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "firstName") }}
+        </p>
+      </div>
+
+      <div>
+        <input
+          formControlName="lastName"
+          type="text"
+          placeholder="Apellido"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        />
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'lastName')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "lastName") }}
+        </p>
+      </div>
+
+      <div>
+        <input
+          formControlName="email"
+          type="email"
+          placeholder="Correo electrónico"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        />
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'email')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "email") }}
+        </p>
+      </div>
+
+      <div>
+        <input
+          formControlName="password"
+          type="password"
+          placeholder="Contraseña"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        />
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'password')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "password") }}
+        </p>
+      </div>
+
+      <div>
+        <input
+          formControlName="ci"
+          type="text"
+          placeholder="Cédula de identidad"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        />
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'ci')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "ci") }}
+        </p>
+      </div>
+
+      <div>
+        <label class="block mb-1 text-sm font-medium text-gray-700"
+          >Cargo</label
+        >
+        <select
+          formControlName="position"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        >
+          <option *ngFor="let p of positions" [value]="p">{{ p }}</option>
+        </select>
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'position')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "position") }}
+        </p>
+      </div>
+
+      <div>
+        <label class="block mb-1 text-sm font-medium text-gray-700">Rol</label>
+        <select
+          formControlName="role"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        >
+          <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+        </select>
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'role')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "role") }}
+        </p>
+      </div>
+
+      <div>
+        <input
+          formControlName="building"
+          type="text"
+          placeholder="Edificio asociado"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        />
+        <p
+          class="text-sm text-red-600"
+          *ngIf="FormUtils.isValidField(registerForm, 'building')"
+        >
+          {{ FormUtils.getFieldError(registerForm, "building") }}
+        </p>
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="isPosting()"
+        class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+      >
+        {{
+          isPosting()
+            ? editingUserId
+              ? "Guardando..."
+              : "Creando..."
+            : editingUserId
+            ? "Guardar cambios"
+            : "Crear cuenta"
+        }}
+      </button>
+    </form>
+  </div>
+</div>

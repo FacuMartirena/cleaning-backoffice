@@ -1,0 +1,213 @@
+<div class="p-6 bg-white rounded-lg shadow-md">
+  <!-- Encabezado + botón Crear -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold text-gray-800">Usuarios</h1>
+    <button
+      (click)="onCreate()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+    >
+      + Crear usuario
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda + Borrar selección -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="relative w-2/3">
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        placeholder="Buscar"
+        class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <button
+      *ngIf="selected.length"
+      (click)="clearSelection()"
+      class="flex items-center text-red-600 hover:text-red-800 transition"
+    >
+      <svg
+        class="h-5 w-5 mr-1"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+      Borrar selección ({{ selected.length }})
+    </button>
+  </div>
+
+  <!-- Tabs Activos / Inactivos -->
+  <div class="border-b border-gray-200 mb-6">
+    <nav class="-mb-px flex space-x-8">
+      <a
+        routerLink="/dashboard/users"
+        class="pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition"
+      >
+        Activos
+      </a>
+      <a
+        [routerLink]="['/dashboard/users/inactivos']"
+        [queryParamsHandling]="'preserve'"
+        [skipLocationChange]="false"
+        class="pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition"
+      >
+        Inactivos
+      </a>
+    </nav>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2">
+            <input type="checkbox" (change)="toggleAll($event)" />
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase"
+          >
+            Foto
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase cursor-pointer"
+          >
+            Nombre completo
+            <span class="inline-block transform rotate-180">▲</span>
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase cursor-pointer"
+          >
+            Email
+            <span class="inline-block transform rotate-180">▲</span>
+          </th>
+          <th
+            class="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase cursor-pointer"
+          >
+            Rol
+            <span class="inline-block transform rotate-180">▲</span>
+          </th>
+          <th
+            class="px-4 py-2 text-right text-sm font-medium text-gray-500 uppercase"
+          >
+            Acción
+          </th>
+        </tr>
+      </thead>
+
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr
+          *ngIf="filteredUsers().length == 0"
+          colspan="6"
+          class="px-4 py-6 text-center text-gray-500"
+        >
+          No hay usuarios
+          {{
+            isInactiveTab ? "inactivos" : "activos"
+          }}.
+        </tr>
+        <tr
+          *ngFor="let user of filteredUsers()"
+          [class.bg-blue-50]="isSelected(user)"
+        >
+          <td class="px-4 py-2">
+            <input
+              type="checkbox"
+              [checked]="isSelected(user)"
+              (change)="toggleSelection(user)"
+            />
+          </td>
+
+          <td class="px-4 py-2">
+            <img
+              [src]="user.photoUrl || 'assets/images/image-test2.png'"
+              (error)="onImageError($event)"
+              alt="{{ user.firstName }}"
+              class="w-8 h-8 rounded-full object-cover border border-gray-300"
+            />
+          </td>
+
+          <td class="px-4 py-2 text-gray-900">
+            {{ user.firstName }} {{ user.lastName }}
+          </td>
+
+          <td class="px-4 py-2 text-gray-600">{{ user.email }}</td>
+          <td class="px-4 py-2">{{ user.role | userRole }}</td>
+
+          <td class="px-4 py-2 text-right space-x-2">
+            <button
+              (click)="edit(user)"
+              class="text-gray-400 hover:text-gray-600"
+            ></button>
+
+            <ng-container *ngIf="!isInactiveTab; else restoreBtn">
+              <button
+                (click)="edit(user)"
+                class="text-gray-400 hover:text-blue-600 transition"
+                title="Editar usuario"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M3 21v-4.25L16.2 3.575q.3-.275.663-.425t.762-.15t.775.15t.65.45L20.425 5q.3.275.438.65T21 6.4q0 .4-.137.763t-.438.662L7.25 21zM17.6 7.8L19 6.4L17.6 5l-1.4 1.4z"
+                  />
+                </svg>
+              </button>
+              <button
+                (click)="delete(user)"
+                class="text-gray-400 hover:text-red-600 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
+                  />
+                </svg>
+              </button>
+            </ng-container>
+
+            <ng-template #restoreBtn>
+              <button
+                (click)="restore(user)"
+                class="text-green-500 hover:text-green-700"
+                title="Restaurar usuario"
+              >
+                <!-- ícono agregar -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12 4a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6V5a1 1 0 0 1 1-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

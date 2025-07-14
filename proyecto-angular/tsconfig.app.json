@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": false
+  },
+  "files": [],
+  "include": ["src/main.ts", "src/polyfills.ts"],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts"]
+}

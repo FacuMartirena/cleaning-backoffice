@@ -1,0 +1,192 @@
+<div class="p-4 sm:p-6 bg-white rounded-lg shadow-md">
+  <!-- Encabezado -->
+  <div
+    class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
+  >
+    <h1 class="text-xl sm:text-2xl font-semibold text-gray-800">Pedidos</h1>
+    <button
+      (click)="openCreateModal()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition w-full sm:w-auto"
+    >
+      + Crear pedido
+    </button>
+  </div>
+
+  <!-- Lista de pedidos -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 table-fixed">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left font-normal">Producto</th>
+          <th class="px-4 py-2 text-left font-normal">Usuario</th>
+          <th class="px-4 py-2 text-left font-normal">Cantidad</th>
+          <th class="px-4 py-2 text-left font-normal">Edificio</th>
+          <th class="px-4 py-2 text-left font-normal">Fecha</th>
+          <th class="px-4 py-2 text-left font-normal">Estado</th>
+          <th
+            class="px-4 py-2 text-left font-normal"
+            *ngIf="
+              currentUser?.role === 'Administrador' ||
+              currentUser?.position === 'Administrativo'
+            "
+          >
+            Acción
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let o of orders">
+          <td class="px-4 py-2 leading-tight break-words">
+            {{ o.productName }}
+          </td>
+          <td class="px-4 py-2 leading-tight break-words">{{ o.user }}</td>
+          <td class="px-4 py-2 leading-tight break-words">{{ o.quantity }}</td>
+          <td class="px-4 py-2 leading-tight break-words">{{ o.building }}</td>
+          <td class="px-4 py-2 leading-tight break-words">
+            {{ o.date | date : "dd/MM/yy HH:mm" }}
+          </td>
+          <td class="px-4 py-2 leading-tight break-words">
+            {{ o.status | orderStatus }}
+            <div
+              *ngIf="o.status === 2 && o.reason"
+              class="text-sm text-gray-500 mt-1"
+            >
+              Motivo: {{ o.reason }}
+            </div>
+          </td>
+          <td
+            class="px-4 py-2 whitespace-nowrap text-center"
+            *ngIf="
+              (currentUser?.role === 'Administrador' ||
+                currentUser?.position === 'Administrativo') &&
+              o.status === 0
+            "
+          >
+            <div class="inline-flex items-center gap-2">
+              <button
+                (click)="finalize(o.id)"
+                class="text-gray-400 hover:text-blue-600 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 512 512"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M258.9 48C141.92 46.42 46.42 141.92 48 258.9c1.56 112.19 92.91 203.54 205.1 205.1c117 1.6 212.48-93.9 210.88-210.88C462.44 140.91 371.09 49.56 258.9 48m-16.79 192.47l51.55-59a16 16 0 0 1 24.1 21.06l-51.55 59a16 16 0 1 1-24.1-21.06m-38.86 90.85a16 16 0 0 1-22.62 0l-47.95-48a16 16 0 1 1 22.64-22.62l48 48a16 16 0 0 1-.07 22.62m176.8-128.79l-111.88 128a16 16 0 0 1-11.51 5.47h-.54a16 16 0 0 1-11.32-4.69l-47.94-48a16 16 0 1 1 22.64-22.62l29.8 29.83a8 8 0 0 0 11.68-.39l95-108.66a16 16 0 0 1 24.1 21.06Z"
+                  />
+                </svg>
+              </button>
+
+              <button
+                (click)="openRejectModal(o.id)"
+                class="text-gray-400 hover:text-red-600 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de creación -->
+  <div
+    *ngIf="isCreateModalOpen"
+    class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
+      <h2 class="text-lg font-semibold mb-4">Crear nuevo pedido</h2>
+
+      <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700"
+            >Producto</label
+          >
+          <select
+            formControlName="productId"
+            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Seleccionar producto</option>
+            <option *ngFor="let p of products" [value]="p.id">
+              {{ p.name }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700"
+            >Cantidad</label
+          >
+          <input
+            type="number"
+            formControlName="quantity"
+            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="text-gray-500"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            [disabled]="orderForm.invalid"
+          >
+            Crear
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de rechazo -->
+  <div
+    *ngIf="isRejectModalOpen"
+    class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
+      <h2 class="text-lg font-semibold mb-4">Motivo del rechazo</h2>
+      <textarea
+        [(ngModel)]="rejectReason"
+        class="w-full px-4 py-2 border rounded mb-4"
+        placeholder="Ingresa el motivo"
+      ></textarea>
+      <div class="flex justify-end gap-3">
+        <button
+          class="text-gray-500"
+          type="button"
+          (click)="closeRejectModal()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="text-red-600"
+          type="button"
+          (click)="reject()"
+          [disabled]="!rejectReason.trim()"
+        >
+          Rechazar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
